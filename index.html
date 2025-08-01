@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Austin & Ally</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+<style>
+.scrollbar-hide::-webkit-scrollbar {
+display: none;
+}
+.scrollbar-hide {
+-ms-overflow-style: none;
+scrollbar-width: none;
+}
+body, html {
+margin: 0;
+padding: 0;
+height: 100%;
+}
+body::before {
+content: "";
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-image: url('https://image.tmdb.org/t/p/w500//eR4bBMJOoSdb9CtiDtp8axHqP7I.jpg');
+background-size: cover;
+background-position: center;
+z-index: -2;
+}
+body::after {
+content: "";
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.75);
+z-index: -1;
+}
+#iframe-principal {
+width: 100%;
+height: 220px;
+border: none;
+background: black;
+}
+#contenedor-video {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+z-index: 10;
+}
+.capitulo-seleccionado {
+background-color: #FF0000 !important;
+color: #fff !important;
+font-weight: bold;
+border-bottom: none !important;
+}
+</style>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-622CWCXV7F"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-622CWCXV7F');
+</script>
+
+<script disable-devtool-auto src='https://cdn.jsdelivr.net/npm/disable-devtool@latest'></script>
+</head>
+<body class="text-white font-sans leading-relaxed">
+
+
+<div id="contenedor-video" class="relative">
+
+<iframe id="iframe-principal" allow="fullscreen" allowfullscreen></iframe>
+
+<a href="https://zinecia.github.io/Home" aria-label="Volver" class="absolute top-3 left-3 text-white text-2xl z-20">
+<i class="fas fa-arrow-left"></i>
+</a>
+
+<!-- Bloqueador de clics -->
+<div class="absolute top-0 left-0 w-full h-full z-10" style="pointer-events: none;"></div>
+</div>
+
+
+<!-- CONTENIDO -->
+<div class="px-4 pt-60 pb-4 space-y-4">
+
+<div class="flex items-center justify-between">
+<h1 class="text-xl sm:text-2xl font-bold">Austin & Ally T<span id="temp-titulo">1</span></h1>
+<button aria-label="Favorito" class="bg-[#1f1f1f] px-3 py-1 rounded text-sm flex items-center gap-2">
+
+</button>
+</div>
+
+<!-- Calificación y género -->
+<div class="flex flex-wrap items-center gap-3 text-sm text-gray-400">
+<span><strong class="text-[#FF7F00]">7.8</strong> / 10</span>
+<span class="text-white">•</span>
+<span>Comedia,Kids,Drama,</span><span class="text-white">•</span><span>2011</span>
+</div>
+
+<!-- Selector de Temporadas -->
+<div class="flex items-center gap-3">
+<label for="temporada" class="text-sm text-gray-300">Temporada:</label>
+<select id="temporada" class="bg-[#1f1f1f] text-white px-3 py-1 rounded text-sm">
+<option value="1">Temporada 1</option>
+<option value="2">Temporada 2</option>
+<option value="3">Temporada 3</option>
+<option value="4">Temporada 4</option>
+
+
+</select>
+</div>
+
+
+<div class="flex space-x-2 overflow-x-auto scrollbar-hide pb-1" id="lista-capitulos">
+
+</div>
+
+<!-- Sinopsis -->
+<div class="bg-[#1e1e1e] rounded-lg p-4 text-sm text-gray-300 leading-relaxed">
+<p><span class="font-semibold text-white">Sinopsis:</span>La amistad poco común se crea entre un músico extrovertido y una excelente pero tímida compositora.</p>
+</div>
+
+</div>
+
+<script>
+var serieId = "35279";
+var temporadaSelect = document.getElementById('temporada');
+var listaCapitulos = document.getElementById('lista-capitulos');
+var tempTitulo = document.getElementById('temp-titulo');
+var btnFavorito = document.querySelector('button[aria-label="Favorito"]');
+var iconoCorazon = btnFavorito.querySelector('i');
+var iframePrincipal = document.getElementById('iframe-principal');
+
+var serieActual = {
+id: serieId,
+titulo: "Austin & Ally",
+temporada: temporadaSelect.value,
+poster: "https://image.tmdb.org/t/p/w500//fg3nq9omOjLGihL0nFDLR1ZWYop.jpg"
+};
+
+var videosPorCapitulo = {
+"1": {
+"1": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1uzwpjAiIfznb3C716oP4tRju__ve3pR-",
+  "2": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1G3gLZ6X4IzypiBuv8Pndc4al41W5bLns",
+  "3": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1TUXnGBErTyypGAakiMODo0kpfrO6zjal",
+  "4": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1LHOf6Opi8dwH3Cr-DHk9ytTl_vQ4f6mV",
+  "5": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1Sl0zUBW2fgcj6voQEopAxpngwrI1iKDj",
+  "6": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1aJIIFcst2SwVm9Npfk13mph4UXsdHXz-",
+  "7": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1VeS6GSHiekQbrMVdd8qJAcmg8qQ8V2kC",
+  "8": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=",
+  "9": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=160_VqTqB5MvcWPXlhvJEKfKFgyubG0jc",
+  "10": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1hH9WoaXhw-D8yxHMhgBcnMvMp5Aen51G",
+  "11": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1Gt3XMnFT3as0jvmaI2Qzd242ML9ThP3p",
+  "12": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1XxASWw0epZqXvCyk8LUUoGRn96QX9kUM",
+  "13": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1DpW7EzH0Y45hXGLIafTSNRmUljli1vgN",
+  "14": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1HGN3pBhmdU8c1WU3NO2e0SWd2GX1Mppp",
+  "15": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1mWI8cR8XlNKAJeLkRQxj6hrUh2ZU5LBI",
+  "16": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1WZMs-h27AjZoX3Wp58dW7TRSC6Kw_XFZ",
+  "17": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=17ZZXNZIGHpyK1ymAoHTBAIDk7s0MvtKO",
+  "18": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1cVJ9CsTGFqNzeBGE0AdveJ0dFE9fjpaD",
+  "19": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1DV12PHyxNiPtqSXiM-4o9iGjE8vna_2_"
+},
+
+"2": {
+"1": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1nq_rWFfcMvd4hFYEPNCINqRrHnhtMf8i",
+  "2": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1ruPtH8l3fOM5r_u5zO3cBT8LDADcQIBB",
+  "3": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1la8m0dYmPqgYR9tgLoyxRGAzXbob9kfo",
+  "4": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1VkKnACg2uWe0517ycktk3PhEc6_DQvgh",
+  "5": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1gmkabrdkdIZxbvdRY_wORPVWvQLnYUA-",
+  "6": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1C8-1m97WM7Uq4KSHAEZ9ncwomWPBCEqz",
+  "7": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1gb-pjEPKRkSyP0WPXH99zMbgV_zrkgvq",
+  "8": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1YZryWbyChCvU82l-A9sM9UlwTrZCYyaI",
+  "9": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1SD_dJfsb4FbbG-2FyMbhyeeC70apJosc",
+  "10": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1UN6hDi67YiUG1NPYe_8lTU9hr4LQaOMJ",
+  "11": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1Mcr4V3OjKRe6IRBr_mzFX5yO7BG2_LT6",
+  "12": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1POPERheAlYkUerWfqjDFMQrCQK-M8u5V",
+  "13": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=15keN4L0Wk8NycfbR2hGCGsWoqpVVLQ1F",
+  "14": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1pb2cFyD7BQvj-_ALVJxMPy42K6gblWlA",
+  "15": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1Rx4nK0lAe-AtCSckzLrJhKSikoTwy8gz",
+  "16": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1qPR-BdnpdfnXe3gIs3vO3BiZC8QQyBVO",
+  "17": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1WR4R2057nLfTafmG1fqELfMnYOnoZHFy",
+  "18": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=13LqB6HGV7gAuIpKhjp2BJ47ir4gE-lqW",
+  "19": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1skuM535p2CFkt-ILS-lfmNx74Nx_ES05",
+  "20": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=13pM7ccoqc8t-lNtcA6HTpZGisRU8rjJC",
+  "21": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1Sc5LW0kH-ahYvpR4MjRfJz2thhMfNw79",
+  "22": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1Zebdgwa4Boab6LPH-4Z4BQG4F9dd0gZK",
+  "23": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1YivVYVbi3PZ8LIsiEWS6yugt84abirSu",
+  "24": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1pRtaNCAuquD_xRlS2-V4MqFpXgl_zaO5",
+  "25": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=11Xk8dDSWl_xeP12ceRa15cM2BeZeFli8",
+  "26": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1eT4ikRUtKrKPHauC6Xlx1dY-sgvF0yJ5"
+},
+
+"3": {
+"1": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=10DHz9Jc89HFvFPokJ1EI6MiVLVHuyyTa",
+  "2": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=10EEt8FPzm3_zsoBI4QD2KXPyGSNT4qXj",
+  "3": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=10H2vrFntfLu_r6LuxJo0kdUqI_EceDHq",
+  "4": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=10KEAd3brVj3_-mRmD4s3MvwP94rZpp-5",
+  "5": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=10H_ZCfyJai-fXDRx1hwWWQ4zMZMtN5p5",
+  "6": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=10qT7fs0-ov_apl4EKXX6u-V_OA2YTOZT",
+  "7": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=10sf2QR_nJbhEhnn5UrynTyfE9JU0_4Lq",
+  "8": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=11AR0kgtp1DpedGkcyuDETX0xgik7P_dr",
+  "9": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=11-0EOVxQwPgfI190jNnzpMKdyK5h3PXF",
+  "10": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1114YTqX1ZCnDd5ImmvN7cEnLVExpDcuz",
+  "11": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=11CvEN3ObOEJBIJJQFHSuciD8n0dMlW6L",
+  "12": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=11G0C1MYIvsWWNK8l5lLbQ9PcnUaX3MWe",
+  "13": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=11G7-4kBMNi9bOJcRYtPAsVkEYsc-HGcz",
+  "14": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=11H5XfFbEyjFJ8esJG5bWv2Op79DJiQCW",
+  "15": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=11KwQW-i4iP0-S3cbjyiIFURUMg0K9mBC",
+  "16": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=11MR_HzCSbzEPyiSWHf0rp_zjOs7Gd7J9",
+  "17": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=11Q_6yZ7djlL9aAaDNTle-PGHZNVZSZTL",
+  "18": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=11SKSRDBwBmNNQR8MHWe2IQ3EPcsJHFBG",
+  "19": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=11YCNxjGZaJlNNlEo2wp6kDy1_eAuyCgV",
+  "20": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=11cKJwBuGJvyjFhGzGRP52XNi2uzsXYNz",
+  "21": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=11y7yhd6Pwu_oXx6O-BnFom05RpP4OmWh",
+  "22": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=120TnHuZuPySTQcMOZmq30qjz-hPbETew"
+},
+
+"4": {
+"1": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1-5RzJvbhEQUyZwGvxw_8K8HLXCyV4W5J",
+  "2": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1-7qje8iwkucbCYaBQ311ZoQoLyJC_WF9",
+  "3": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1-9_mKdAwfu5JEUy6EgCUk1MYuOLeMUfM",
+  "4": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1-Fe17tT-0TZa9JVJM4Tg86cjj2UW0oc3",
+  "5": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1-GA9dliPG3V0N4rmPA_1G9keeJetmd4H",
+  "6": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1-IfcqZG7J11_BvV9UUjYIFzlSnwDJpnP",
+  "7": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1-JOVV5h5EQNkZy9Wabqgutr-ia7owVd5",
+  "8": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1-L-nhyqpMqrK3VeHkCHZ0AlhRT7FJ1_y",
+  "9": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1-PLcpYuC-_NcnZ9TTNaXmtvReKhqaLGy",
+  "10": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1-QEQS8g7ZXsnhtw4W3BJnxdTwGxX9Hwc",
+  "11": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=1095NdcAGY6aDY2XT_GdbWdLjr89_YLAk",
+  "12": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=10AjxzTxPTfg-PeuEy2WiTEiXu1i8cUfP",
+  "13": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=10CZSAqgHF4_s7LG1lWLNFhaf3QP6z2sR",
+  "14": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=10Eyb1kqflsVYUWfXFwSewTdhhCSx5I1d",
+  "15": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=10HCOPRsh33EeM8-OH13dFFzIWL4u5qtJ",
+  "16": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=10I-3ai173ofqNd3Y_sY7lXiQQXp_1ONz",
+  "17": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=10cm3638pJ4j2T9WbbC0_8O436dQ-M8CF",
+  "18": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=10d0CfYCpMQQHZasAZCYvhWV1jcfG6uOe",
+  "19": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=10lh-A5q6mZJpqIQEd7CQffh_tCCjaZaa",
+  "20": "https://lzrdrgz01.github.io/web/?player=jwpl&provider=gdrive&format=video%2Fmp4&link=10qCEN3LRk1NUBt8dDUCJITMOziRR7t0e"
+},
+
+
+
+
+};
+
+function cargarFavoritos() {
+var favs = localStorage.getItem('seriesFavoritas');
+return favs ? JSON.parse(favs) : [];
+}
+
+function guardarFavoritos(favoritos) {
+localStorage.setItem('seriesFavoritas', JSON.stringify(favoritos));
+}
+
+function esFavorito(serie, favoritos) {
+return favoritos.some(function(fav) {
+return fav.id === serie.id && fav.temporada === serie.temporada;
+});
+}
+
+function actualizarBotonFavorito() {
+var favoritos = cargarFavoritos();
+if (esFavorito(serieActual, favoritos)) {
+btnFavorito.classList.add('bg-[#FF7F00]');
+iconoCorazon.classList.add('fas');
+iconoCorazon.classList.remove('far');
+} else {
+btnFavorito.classList.remove('bg-[#FF7F00]');
+iconoCorazon.classList.remove('fas');
+iconoCorazon.classList.add('far');
+}
+}
+
+btnFavorito.addEventListener('click', function() {
+var favoritos = cargarFavoritos();
+if (esFavorito(serieActual, favoritos)) {
+favoritos = favoritos.filter(function(fav) {
+return !(fav.id === serieActual.id && fav.temporada === serieActual.temporada);
+});
+} else {
+favoritos.push(Object.assign({}, serieActual));
+}
+guardarFavoritos(favoritos);
+actualizarBotonFavorito();
+});
+
+function guardarTemporada(temporada) {
+localStorage.setItem("temporadaSeleccionada_" + serieId, temporada);
+}
+
+function cargarTemporadaGuardada() {
+var temp = localStorage.getItem("temporadaSeleccionada_" + serieId);
+return temp ? temp : "1";
+}
+
+function guardarCapitulo(capitulo) {
+var key = "ultimoCapituloVisto_" + serieId + "_T" + serieActual.temporada;
+localStorage.setItem(key, capitulo);
+}
+
+function cargarCapituloGuardado() {
+var key = "ultimoCapituloVisto_" + serieId + "_T" + serieActual.temporada;
+var capituloGuardado = localStorage.getItem(key);
+var botones = listaCapitulos.getElementsByClassName('capitulo-btn');
+var encontrado = false;
+
+for (var i = 0; i < botones.length; i++) {
+botones[i].className = botones[i].className.replace(' capitulo-seleccionado', '');
+if (botones[i].getAttribute('data-capitulo') === capituloGuardado) {
+botones[i].className += ' capitulo-seleccionado';
+botones[i].scrollIntoView({ behavior: 'smooth', inline: 'center' });
+cambiarVideo(capituloGuardado);
+encontrado = true;
+}
+}
+if (!encontrado) {
+cambiarVideo("1");
+}
+}
+
+function cambiarVideo(capitulo) {
+var temp = serieActual.temporada;
+var url = videosPorCapitulo[temp] && videosPorCapitulo[temp][capitulo];
+if (url) {
+iframePrincipal.src = url;
+guardarCapitulo(capitulo);
+}
+}
+
+function generarCapitulos(temporada) {
+listaCapitulos.innerHTML = '';
+var capitulosObj = videosPorCapitulo[temporada] || {};
+var total = Object.keys(capitulosObj).length;
+
+for (var i = 1; i <= total; i++) {
+var btn = document.createElement('button');
+btn.className = 'capitulo-btn px-4 py-2 rounded bg-[#2a2a2a] text-white';
+btn.setAttribute('data-capitulo', i.toString());
+btn.textContent = i;
+listaCapitulos.appendChild(btn);
+}
+agregarEventosCapitulos();
+cargarCapituloGuardado();
+}
+
+function agregarEventosCapitulos() {
+var botones = listaCapitulos.getElementsByClassName('capitulo-btn');
+for (var i = 0; i < botones.length; i++) {
+(function(index){
+botones[index].onclick = function() {
+for (var j = 0; j < botones.length; j++) {
+botones[j].className = botones[j].className.replace(' capitulo-seleccionado', '');
+}
+if (botones[index].className.indexOf('capitulo-seleccionado') === -1) {
+botones[index].className += ' capitulo-seleccionado';
+}
+botones[index].scrollIntoView({ behavior: 'smooth', inline: 'center' });
+cambiarVideo(botones[index].getAttribute('data-capitulo'));
+};
+})(i);
+}
+}
+
+temporadaSelect.onchange = function() {
+var temp = temporadaSelect.value;
+serieActual.temporada = temp;
+tempTitulo.textContent = temp;
+guardarTemporada(temp);
+generarCapitulos(temp);
+actualizarBotonFavorito();
+};
+
+window.onload = function() {
+var tempGuardada = cargarTemporadaGuardada();
+temporadaSelect.value = tempGuardada;
+serieActual.temporada = tempGuardada;
+tempTitulo.textContent = tempGuardada;
+generarCapitulos(tempGuardada);
+actualizarBotonFavorito();
+};
+</script>
+</body>
+</html>
